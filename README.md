@@ -25,6 +25,20 @@ No real patient information is anywhere in here.
     - controlled substance: refills need clinician sign-off
 ```
 
+## The web app
+
+![CareFlow web app: patient chat on the left, staff review desk on the right](docs/screenshot.png)
+
+Patients write to the clinic on the left. Under every reply, a route line shows which
+agents handled the message and where it ended: done, passed to staff, waiting for
+review, or escalated. Clinic staff work the review queue on the right, and an approval
+there updates the patient's chat a few seconds later. "All requests" lists everything,
+and clicking a row shows its full audit trail.
+
+```bash
+careflow web        # starts the app and opens http://localhost:8000
+```
+
 ## Try it in a minute
 
 You don't need an API key. Everything runs offline by default.
@@ -35,9 +49,10 @@ cd careflow-agents
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
-careflow demo      # five requests end to end, including one that waits for review
+careflow web       # the web app: patient chat + staff review desk
+careflow demo      # five requests end to end in the terminal
 careflow evals     # the evaluation suite CI runs on every PR
-pytest             # 55 tests
+pytest             # 61 tests
 ```
 
 To use a real model, install its extra and set two variables:
@@ -160,7 +175,7 @@ default; fast, good for tests) or as a subprocess over stdio
 ## The API
 
 ```bash
-uvicorn careflow.api:app --reload          # then open http://localhost:8000/docs
+uvicorn careflow.api:app --reload          # web app at :8000, raw API at :8000/docs
 ```
 
 ```bash
@@ -189,7 +204,7 @@ docker build -t careflow-agents . && docker run -p 8000:8000 careflow-agents
 
 ## Evaluation
 
-`careflow evals` runs 22 scripted scenarios through the real graph against fresh data
+`careflow evals` runs 24 scripted scenarios through the real graph against fresh data
 and checks four gates. CI fails the build if any gate is missed.
 
 | Metric | Gate | What it protects |
@@ -219,6 +234,7 @@ src/careflow/
   audit.py         request registry and audit trail
   llm.py           provider-agnostic structured-output interface
   api.py, cli.py   the two front doors
+  web/             the web app: plain HTML, CSS and JavaScript, served by the API
   evals/           scenarios and the evaluation runner
 tests/             unit, tool, workflow, API and eval tests
 ```
@@ -243,7 +259,8 @@ went near real patients:
   session and staff identity from SSO, not a `patient_id` in the request body.
 - **Tracing.** In production I'd send OpenTelemetry spans per node and per tool call.
   Here, the audit table plays that role.
-- **A review UI.** Reviews happen through the API or the CLI.
+- **Real-time updates.** The web app checks for changes every few seconds. A production
+  version would push them over WebSockets or server-sent events.
 - **Retrieval.** Policy questions ("do you take my insurance?") would go to a RAG step
   over approved documents. Today they're handed off to staff.
 - **NER-based PII detection.** The regexes plus the known patient name cover the demo,
