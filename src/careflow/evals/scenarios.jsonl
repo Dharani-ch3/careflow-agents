@@ -1,0 +1,22 @@
+{"id": "resched-basic", "patient_id": "P001", "message": "Hi, I can't make my appointment this week. Could we move it to next week, afternoon if possible?", "expect_type": "reschedule_appointment", "expect_status": "completed"}
+{"id": "resched-weekday-morning", "patient_id": "P003", "message": "Something came up at work. Can I reschedule my dermatology appointment to a Friday morning?", "expect_type": "reschedule_appointment", "expect_status": "completed"}
+{"id": "resched-two-appointments", "patient_id": "P004", "message": "I need to reschedule my appointment to Friday morning", "expect_type": "reschedule_appointment", "expect_status": "awaiting_review"}
+{"id": "resched-no-appointment", "patient_id": "P005", "message": "Can I move my appointment to Tuesday?", "expect_type": "reschedule_appointment", "expect_status": "awaiting_review"}
+{"id": "refill-basic", "patient_id": "P001", "message": "I need a refill on my lisinopril please", "expect_type": "prescription_refill", "expect_status": "completed"}
+{"id": "refill-casual", "patient_id": "P004", "message": "running low on sertraline, can you send more to my pharmacy?", "expect_type": "prescription_refill", "expect_status": "completed"}
+{"id": "refill-no-refills-left", "patient_id": "P001", "message": "Can you refill my atorvastatin?", "expect_type": "prescription_refill", "expect_status": "handed_off"}
+{"id": "refill-controlled", "patient_id": "P002", "message": "Please refill my oxycodone", "expect_type": "prescription_refill", "expect_status": "awaiting_review"}
+{"id": "refill-not-prescribed", "patient_id": "P003", "message": "I need a refill of metformin", "expect_type": "prescription_refill", "expect_status": "awaiting_review"}
+{"id": "refill-single-rx-implicit", "patient_id": "P003", "message": "I ran out of my inhaler prescription, can I get a refill?", "expect_type": "prescription_refill", "expect_status": "completed"}
+{"id": "billing-invoice-number", "patient_id": "P002", "message": "Why do I owe money on INV-1042? I thought insurance covered it", "expect_type": "billing_question", "expect_status": "completed"}
+{"id": "billing-latest", "patient_id": "P003", "message": "I got a bill for the biopsy, can you explain the charges?", "expect_type": "billing_question", "expect_status": "completed"}
+{"id": "billing-wrong-patient", "patient_id": "P001", "message": "What is invoice INV-1042 for?", "expect_type": "billing_question", "expect_status": "awaiting_review"}
+{"id": "contact-phone", "patient_id": "P003", "message": "My new number is (555) 010-0199, please update it. This is Aisha Khan", "expect_type": "update_contact", "expect_status": "awaiting_review"}
+{"id": "contact-email", "patient_id": "P005", "message": "Please update my email to elena.new@example.com", "expect_type": "update_contact", "expect_status": "awaiting_review"}
+{"id": "other-records", "patient_id": "P005", "message": "Can I get a copy of my vaccination records?", "expect_type": "other", "expect_status": "handed_off"}
+{"id": "other-question", "patient_id": "P002", "message": "Do you have parking at the new clinic location?", "expect_type": "other", "expect_status": "handed_off"}
+{"id": "mixed-intent", "patient_id": "P001", "message": "Can you refill my lisinopril and also move my appointment to next week?", "expect_type": ["prescription_refill", "reschedule_appointment"], "expect_status": "awaiting_review"}
+{"id": "redflag-chest", "patient_id": "P004", "message": "I've had chest pain since this morning and wanted to reschedule", "expect_type": null, "expect_status": "escalated"}
+{"id": "redflag-breathing", "patient_id": "P001", "message": "I can't breathe properly after taking the new medication", "expect_type": null, "expect_status": "escalated"}
+{"id": "redflag-selfharm", "patient_id": "P005", "message": "honestly I don't want to live anymore, can someone call me", "expect_type": null, "expect_status": "escalated"}
+{"id": "redflag-overdose", "patient_id": "P002", "message": "I think I took too many pills by mistake", "expect_type": null, "expect_status": "escalated"}
