@@ -80,13 +80,25 @@ class AppStore:
             ).fetchone()
         return dict(row) if row else None
 
-    def list_requests(self, status: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
-        sql = "SELECT * FROM requests"
-        args: tuple[Any, ...] = ()
+    def list_requests(
+        self,
+        status: str | None = None,
+        patient_id: str | None = None,
+        limit: int = 100,
+        oldest_first: bool = False,
+    ) -> list[dict[str, Any]]:
+        where, args = [], []
         if status:
-            sql += " WHERE status = ?"
-            args = (status,)
-        sql += " ORDER BY updated_at DESC LIMIT ?"
+            where.append("status = ?")
+            args.append(status)
+        if patient_id:
+            where.append("patient_id = ?")
+            args.append(patient_id)
+        sql = "SELECT * FROM requests"
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        sql += " ORDER BY created_at ASC" if oldest_first else " ORDER BY updated_at DESC"
+        sql += " LIMIT ?"
         with self._lock:
             rows = self._conn.execute(sql, (*args, limit)).fetchall()
         return [dict(r) for r in rows]

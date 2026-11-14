@@ -1,5 +1,6 @@
 """Command-line entry point.
 
+careflow web                          open the web app (patient chat + staff desk)
 careflow demo                         walk through a handful of requests
 careflow ask P001 "move my appointment to Friday"
 careflow pending                      list requests waiting for review
@@ -133,6 +134,23 @@ async def _evals(args: argparse.Namespace) -> int:
     return 1 if runner.failed_gates(summary) else 0
 
 
+def _web(args: argparse.Namespace) -> int:
+    import os
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    if args.data_dir:
+        os.environ["CAREFLOW_DATA_DIR"] = args.data_dir
+    url = f"http://localhost:{args.port}"
+    print(f"CareFlow is running at {url}  (press Ctrl+C to stop)")
+    if not args.no_browser:
+        threading.Timer(1.5, webbrowser.open, args=[url]).start()
+    uvicorn.run("careflow.api:app", host="127.0.0.1", port=args.port, log_level="warning")
+    return 0
+
+
 def _seed(args: argparse.Namespace) -> int:
     settings = _settings(args)
     for db in (settings.ehr_db, settings.app_db, settings.checkpoint_db):
@@ -156,6 +174,9 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--data-dir", help="override CAREFLOW_DATA_DIR")
         return sp
 
+    web = add("web", "start the web app and open it in your browser")
+    web.add_argument("--port", type=int, default=8000)
+    web.add_argument("--no-browser", action="store_true", help="don't open a browser tab")
     add("demo", "run a short scripted walkthrough on fresh data")
     ask = add("ask", "submit one patient message")
     ask.add_argument("patient_id")
@@ -184,6 +205,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "seed":
         return _seed(args)
+    if args.command == "web":
+        return _web(args)
     handler = {
         "demo": _demo,
         "ask": _ask,

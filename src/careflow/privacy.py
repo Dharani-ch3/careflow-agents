@@ -70,6 +70,10 @@ def redact(
         return token
 
     masked = text
+    # Structured identifiers first. Names second, so a name inside an email address
+    # ("aisha.new@example.com") is never split out of it.
+    for kind, pattern in _PATTERNS:
+        masked = pattern.sub(lambda m, k=kind: token_for(k, m.group(0)), masked)  # type: ignore[misc]
     # Longest names first so "Maria Lopez" wins over "Maria".
     for name in sorted({n for n in known_names if n and len(n) > 1}, key=len, reverse=True):
         masked = re.sub(
@@ -78,8 +82,6 @@ def redact(
             masked,
             flags=re.IGNORECASE,
         )
-    for kind, pattern in _PATTERNS:
-        masked = pattern.sub(lambda m, k=kind: token_for(k, m.group(0)), masked)  # type: ignore[misc]
     return Redaction(masked, out_vault)
 
 

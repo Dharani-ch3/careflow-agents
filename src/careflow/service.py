@@ -47,6 +47,8 @@ class RequestView:
     request_id: str
     patient_id: str
     status: str
+    message: str | None = None
+    created_at: str | None = None
     request_type: str | None = None
     summary: str | None = None
     reply: str | None = None
@@ -158,6 +160,18 @@ class CareFlow:
     def pending_reviews(self) -> list[dict[str, Any]]:
         return self.store.list_requests(status=Status.AWAITING_REVIEW)
 
+    async def pending_views(self) -> list[RequestView]:
+        """Everything waiting on a human, with the reviewer payload attached."""
+        return [await self._view(r["id"]) for r in self.pending_reviews()]
+
+    def recent_requests(self, limit: int = 50) -> list[dict[str, Any]]:
+        return self.store.list_requests(limit=limit)
+
+    async def history(self, patient_id: str, limit: int = 50) -> list[RequestView]:
+        """One patient's requests, oldest first: what the chat window shows."""
+        rows = self.store.list_requests(patient_id=patient_id, limit=limit, oldest_first=True)
+        return [await self._view(r["id"]) for r in rows]
+
     def audit_trail(self, request_id: str) -> list[dict[str, Any]]:
         if self.store.get_request(request_id) is None:
             raise NotFound(request_id)
@@ -184,6 +198,8 @@ class CareFlow:
             request_id=request_id,
             patient_id=values.get("patient_id", row.get("patient_id", "")),
             status=status,
+            message=values.get("message"),
+            created_at=row.get("created_at"),
             request_type=intake.get("request_type"),
             summary=intake.get("summary"),
             reply=values.get("reply"),
