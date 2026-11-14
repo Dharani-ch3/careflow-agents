@@ -1,0 +1,689 @@
+/* CareFlow web app.
+   One family (Atkinson Hyperlegible, designed for low-vision readers) and a cool clinical
+   palette. Colour is reserved for meaning: status, and the route each message took. */
+
+:root {
+  --paper: #eef2f1;
+  --sheet: #ffffff;
+  --ink: #18282e;
+  --muted: #56676c;
+  --line: #d3dcda;
+  --care: #1e6b63;
+  --care-soft: #e2efec;
+  --wait: #a86a12;
+  --wait-soft: #fbf1df;
+  --alert: #b42318;
+  --alert-soft: #fbe9e7;
+  --handoff: #36599a;
+  --handoff-soft: #e7edf8;
+  --declined: #6b7479;
+
+  --font: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-panel: 14px;
+  --radius-bubble: 12px;
+  --radius-control: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--care);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- top bar ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 24px;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* A plus made of two bars: the one piece of brand drawing. */
+.brand-mark {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+.brand-mark::before,
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  background: var(--care);
+  border-radius: 2px;
+}
+.brand-mark::before {
+  left: 8px;
+  top: 0;
+  width: 6px;
+  height: 22px;
+}
+.brand-mark::after {
+  left: 0;
+  top: 8px;
+  width: 22px;
+  height: 6px;
+}
+
+.brand h1 {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.topbar-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.topbar-link {
+  margin-left: auto;
+  color: var(--care);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ---------- layout ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 20px;
+  height: calc(100vh - 59px);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-head h2 {
+  font-size: 18px;
+}
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field-inline select,
+.field-inline input {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--sheet);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.field-inline input {
+  width: 9.5rem;
+}
+
+.key-row {
+  padding: 10px 20px 0;
+}
+
+/* ---------- chat ---------- */
+
+.chat-log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bubble {
+  max-width: min(36rem, 85%);
+  padding: 10px 14px;
+  border-radius: var(--radius-bubble);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bubble-patient {
+  align-self: flex-end;
+  background: var(--care);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble-clinic {
+  align-self: flex-start;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+
+.bubble-clinic.is-waiting {
+  background: var(--wait-soft);
+  border-color: #ecd3a6;
+}
+
+.bubble-clinic.is-urgent {
+  background: var(--alert-soft);
+  border-color: #f0c2bd;
+}
+
+.bubble-clinic.is-working {
+  color: var(--muted);
+}
+
+.sender {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+/* The route line: which agents a message passed through, and where it ended. */
+.route {
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  display: flex;
+  align-items: flex-start;
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0 0 0 4px;
+  --route: var(--care);
+}
+.route[data-status="awaiting_review"] {
+  --route: var(--wait);
+}
+.route[data-status="escalated"] {
+  --route: var(--alert);
+}
+.route[data-status="handed_off"] {
+  --route: var(--handoff);
+}
+.route[data-status="rejected"] {
+  --route: var(--declined);
+}
+
+.route li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 54px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.route li::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--route);
+}
+
+.route li:first-child::before {
+  display: none;
+}
+
+.route .stop {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--sheet);
+  border: 2px solid var(--route);
+  margin-bottom: 4px;
+}
+
+.route li.end .stop {
+  background: var(--route);
+}
+
+.route li.end {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.route[data-status="awaiting_review"] li.end .stop {
+  animation: wait-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes wait-pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba(168, 106, 18, 0.18);
+  }
+}
+
+.trail {
+  align-self: flex-start;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: min(36rem, 85%);
+}
+
+.trail summary {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.trail ol {
+  margin: 6px 0 0;
+  padding-left: 1.4rem;
+}
+
+.empty-chat {
+  margin: auto;
+  max-width: 26rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-chat p {
+  margin: 0 0 4px;
+}
+
+/* ---------- composer ---------- */
+
+.composer {
+  border-top: 1px solid var(--line);
+  padding: 12px 20px 16px;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.suggestion {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  border-color: var(--care);
+  color: var(--care);
+}
+
+.chat-form {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.chat-form textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  line-height: 1.4;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  padding: 9px 18px;
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.btn-primary {
+  background: var(--care);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #17554f;
+}
+
+.btn-quiet {
+  background: var(--sheet);
+  border-color: var(--line);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+/* ---------- staff side ---------- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--care);
+}
+
+.count {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0 6px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 12px;
+  text-align: center;
+}
+
+.count.has-items {
+  background: var(--wait);
+  color: #fff;
+}
+
+.staff-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 20px;
+}
+
+.staff-empty {
+  color: var(--muted);
+  margin: 24px 0;
+}
+
+.review-card {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--wait);
+  border-radius: var(--radius-control);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.review-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.review-title {
+  font-size: 15px;
+}
+
+.review-meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.review-message {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.review-card dl {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.review-card dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.review-card dd {
+  margin: 2px 0 0;
+}
+
+.review-reasons {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.review-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.review-card.is-done {
+  border-left-color: var(--care);
+  color: var(--muted);
+}
+
+/* Activity list */
+
+.activity-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-row > button {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 2px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.activity-time {
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-what strong {
+  display: block;
+  font-size: 14px;
+}
+
+.activity-what span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.audit {
+  margin: 0 0 12px;
+  padding: 10px 12px 10px 2rem;
+  background: var(--paper);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.audit li {
+  margin: 2px 0;
+}
+
+.audit .who {
+  font-weight: 700;
+}
+
+/* Status pills, shared by both sides */
+
+.status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--care-soft);
+  color: var(--care);
+}
+.status[data-status="awaiting_review"] {
+  background: var(--wait-soft);
+  color: var(--wait);
+}
+.status[data-status="escalated"] {
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+.status[data-status="handed_off"] {
+  background: var(--handoff-soft);
+  color: var(--handoff);
+}
+.status[data-status="rejected"] {
+  background: #eef0f1;
+  color: var(--declined);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  border-radius: var(--radius-control);
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    padding: 12px;
+  }
+  .route li {
+    width: 44px;
+    font-size: 10.5px;
+  }
+  .bubble,
+  .trail {
+    max-width: 92%;
+  }
+  .panel {
+    min-height: 70vh;
+  }
+  .topbar {
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+  .topbar-note {
+    order: 3;
+    width: 100%;
+  }
+  .panel-head {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route[data-status="awaiting_review"] li.end .stop {
+    animation: none;
+  }
+}

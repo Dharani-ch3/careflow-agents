@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareFlow: patient messages and staff review</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath fill='%231e6b63' d='M8 0h6v8h8v6h-8v8H8v-8H0V8h8z'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <h1>CareFlow</h1>
+      </div>
+      <p class="topbar-note">Demo clinic with made-up patients. Nothing here is real data.</p>
+      <a class="topbar-link" href="/docs" target="_blank" rel="noopener">API docs</a>
+    </header>
+
+    <main class="layout">
+      <!-- Patient side -->
+      <section class="panel patient" aria-labelledby="patient-heading">
+        <div class="panel-head">
+          <h2 id="patient-heading">Patient portal</h2>
+          <label class="field-inline">
+            <span>Signed in as</span>
+            <select id="patient-select" aria-label="Patient"></select>
+          </label>
+        </div>
+
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+        <div class="composer">
+          <div id="suggestions" class="suggestions" aria-label="Example messages"></div>
+          <form id="chat-form" class="chat-form">
+            <label for="chat-input" class="visually-hidden">Message to the clinic</label>
+            <textarea
+              id="chat-input"
+              rows="2"
+              maxlength="4000"
+              placeholder="Write to the clinic, for example: can I move my appointment to Friday?"
+              required
+            ></textarea>
+            <button id="send-button" type="submit" class="btn btn-primary">Send</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Staff side -->
+      <section class="panel staff" aria-labelledby="staff-heading">
+        <div class="panel-head">
+          <h2 id="staff-heading">Clinic staff</h2>
+          <label class="field-inline">
+            <span>Reviewing as</span>
+            <input id="reviewer-name" type="text" value="nurse.kim" autocomplete="off" />
+          </label>
+        </div>
+        <label id="key-row" class="field-inline key-row" hidden>
+          <span>Reviewer key</span>
+          <input id="reviewer-key" type="password" autocomplete="off" />
+        </label>
+
+        <div class="tabs" role="tablist">
+          <button id="tab-review" class="tab" role="tab" aria-selected="true" aria-controls="review-list">
+            Needs review <span id="review-count" class="count">0</span>
+          </button>
+          <button id="tab-activity" class="tab" role="tab" aria-selected="false" aria-controls="activity-list">
+            All requests
+          </button>
+        </div>
+
+        <div id="review-list" class="staff-list" role="tabpanel"></div>
+        <div id="activity-list" class="staff-list" role="tabpanel" hidden></div>
+      </section>
+    </main>
+
+    <template id="tpl-review">
+      <article class="review-card">
+        <header>
+          <h3 class="review-title"></h3>
+          <span class="review-meta"></span>
+        </header>
+        <blockquote class="review-message"></blockquote>
+        <dl>
+          <dt>If you approve</dt>
+          <dd class="review-action"></dd>
+          <dt>Why it's waiting</dt>
+          <dd><ul class="review-reasons"></ul></dd>
+        </dl>
+        <div class="review-buttons">
+          <button type="button" class="btn btn-primary approve">Approve</button>
+          <button type="button" class="btn btn-quiet reject">Reject</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
