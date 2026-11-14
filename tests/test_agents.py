@@ -40,6 +40,8 @@ def test_red_flag_screen_does_not_fire_on_ordinary_messages(message: str) -> Non
     [
         ("Can we reschedule to Thursday?", RequestType.RESCHEDULE),
         ("I'm running low on my metformin", RequestType.REFILL),
+        ("I need more sertraline", RequestType.REFILL),
+        ("can you send more of the inhaler, almost out", RequestType.REFILL),
         ("What is this charge on my bill?", RequestType.BILLING),
         ("My email has changed, it's [EMAIL_1]", RequestType.CONTACT),
         ("Where do I park?", RequestType.OTHER),
@@ -92,3 +94,11 @@ def test_crisis_line_only_for_self_harm() -> None:
 
     assert "988" in urgent_reply(["self-harm"])
     assert "988" not in urgent_reply(["chest pain"])
+
+
+def test_medication_alone_is_a_low_confidence_refill() -> None:
+    # Named a drug but didn't ask for anything: route it to a person, don't auto-refill.
+    result = rule_based_intake("sertraline is making me dizzy", TODAY)
+    assert result.request_type == RequestType.REFILL
+    assert result.confidence < 0.75
+    assert result.entities.medication == "sertraline"

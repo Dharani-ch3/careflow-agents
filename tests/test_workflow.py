@@ -162,3 +162,10 @@ async def test_works_over_stdio_transport(settings: Settings) -> None:
         view = await app.submit("P001", "I need a refill on my lisinopril please")
     assert view.status == Status.COMPLETED
     assert _ehr(settings).count("refill_requests") == 1
+
+
+async def test_email_that_contains_the_patients_name_is_saved_whole(settings: Settings) -> None:
+    async with CareFlow(settings) as app:
+        view = await app.submit("P003", "My new email is aisha.new@example.com")
+        await app.review(view.request_id, APPROVE)
+    assert _ehr(settings).get_patient_profile("P003")["email"] == "aisha.new@example.com"

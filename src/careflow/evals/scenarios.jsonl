@@ -4,6 +4,8 @@
 {"id": "resched-no-appointment", "patient_id": "P005", "message": "Can I move my appointment to Tuesday?", "expect_type": "reschedule_appointment", "expect_status": "awaiting_review"}
 {"id": "refill-basic", "patient_id": "P001", "message": "I need a refill on my lisinopril please", "expect_type": "prescription_refill", "expect_status": "completed"}
 {"id": "refill-casual", "patient_id": "P004", "message": "running low on sertraline, can you send more to my pharmacy?", "expect_type": "prescription_refill", "expect_status": "completed"}
+{"id": "refill-need-more", "patient_id": "P004", "message": "I need more sertraline", "expect_type": "prescription_refill", "expect_status": "completed"}
+{"id": "medication-side-effect", "patient_id": "P004", "message": "sertraline is making me dizzy", "expect_type": ["prescription_refill", "other"], "expect_status": "awaiting_review"}
 {"id": "refill-no-refills-left", "patient_id": "P001", "message": "Can you refill my atorvastatin?", "expect_type": "prescription_refill", "expect_status": "handed_off"}
 {"id": "refill-controlled", "patient_id": "P002", "message": "Please refill my oxycodone", "expect_type": "prescription_refill", "expect_status": "awaiting_review"}
 {"id": "refill-not-prescribed", "patient_id": "P003", "message": "I need a refill of metformin", "expect_type": "prescription_refill", "expect_status": "awaiting_review"}

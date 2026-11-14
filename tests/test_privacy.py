@@ -43,3 +43,9 @@ def test_ordinary_dates_are_not_masked() -> None:
 
 def test_mask_for_logs() -> None:
     assert mask({"x": ["call 555-010-0199"]}) == {"x": ["call [PHONE_1]"]}
+
+
+def test_name_inside_an_email_stays_part_of_the_email() -> None:
+    red = redact("My new email is aisha.new@example.com", known_names=["Aisha", "Khan"])
+    assert red.text == "My new email is [EMAIL_1]"
+    assert red.vault["[EMAIL_1]"] == "aisha.new@example.com"

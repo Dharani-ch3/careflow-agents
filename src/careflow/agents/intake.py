@@ -17,6 +17,7 @@ _KEYWORDS: dict[RequestType, re.Pattern[str]] = {
     ),
     RequestType.REFILL: re.compile(
         r"refill|renew|running (low|out)|ran out|run out|out of my|more of my|prescription"
+        r"|\b(need|get|send|want|have) (some )?more\b|almost out\b"
     ),
     RequestType.BILLING: re.compile(
         r"\bbill|invoice|\binv-?\d|charge|\bowe\b|statement|copay|insurance (paid|cover)"
@@ -62,7 +63,14 @@ def rule_based_intake(masked_message: str, today: date) -> Intake:
     hits = {rt: len(p.findall(text)) for rt, p in _KEYWORDS.items()}
     matched = {rt: n for rt, n in hits.items() if n}
 
-    if not matched:
+    medication = next((m for m in _MEDICATIONS if m in text), None)
+
+    if not matched and medication:
+        # A medication is named but nothing says what the patient wants done with it
+        # ("sertraline is making me dizzy" is not a refill). Treat it as a likely refill,
+        # but with low confidence, so a person confirms before anything is sent.
+        request_type, confidence = RequestType.REFILL, 0.6
+    elif not matched:
         request_type, confidence = RequestType.OTHER, 0.5
     else:
         request_type = max(matched, key=lambda rt: matched[rt])
@@ -80,7 +88,7 @@ def rule_based_intake(masked_message: str, today: date) -> Intake:
     email = re.search(r"\[EMAIL_\d+\]", masked_message)
 
     entities = Entities(
-        medication=next((m for m in _MEDICATIONS if m in text), None),
+        medication=medication,
         preferred_date=_preferred_date(text, today),
         time_of_day=time_of_day,
         invoice_number=f"INV-{invoice[1]}" if invoice else None,
