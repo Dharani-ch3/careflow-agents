@@ -1,0 +1,14 @@
+# One-click deploy on Render: New > Blueprint > pick this repo.
+# Free plan: the service sleeps after 15 minutes without traffic (the first visit
+# after that takes about a minute) and its disk is reset, so the demo data starts
+# fresh. That's fine here: every patient and record is synthetic.
+services:
+  - type: web
+    name: careflow-agents
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: CAREFLOW_LLM_PROVIDER
+        value: offline
