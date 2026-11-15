@@ -4,6 +4,8 @@
 ![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+**Live demo:** [careflow-agents.onrender.com](https://careflow-agents.onrender.com) (free hosting, so the first visit can take up to a minute to wake up)
+
 A small, complete version of the multi-agent system I work on in healthcare: patients
 send a message ("can I move my appointment to Friday afternoon?", "I need a refill"),
 and a team of agents works out what they want, does the lookups, proposes an action,
