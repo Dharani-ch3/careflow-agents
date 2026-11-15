@@ -15,6 +15,8 @@ RUN pip install --no-cache-dir /wheels/*.whl && rm -rf /wheels \
     && useradd --create-home --uid 10001 careflow \
     && mkdir -p /app/data && chown careflow /app/data
 USER careflow
+# Hosts like Render pass the port in $PORT; locally it falls back to 8000.
+ENV PORT=8000
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"
-CMD ["uvicorn", "careflow.api:app", "--host", "0.0.0.0", "--port", "8000"]
+HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import os, urllib.request as u; u.urlopen('http://localhost:%s/healthz' % os.environ['PORT'])"
+CMD ["sh", "-c", "uvicorn careflow.api:app --host 0.0.0.0 --port ${PORT}"]
