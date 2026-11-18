@@ -160,7 +160,7 @@ You can use it on its own with any MCP client:
 npx @modelcontextprotocol/inspector careflow-mcp     # poke at the tools in a browser
 ```
 
-or in Claude Desktop's `claude_desktop_config.json`:
+or in your MCP client's config file:
 
 ```json
 {

@@ -12,9 +12,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LLMProvider = Literal["offline", "openai", "anthropic", "ollama"]
 
+# Anthropic has no default: set CAREFLOW_LLM_MODEL to the model id you want.
 DEFAULT_MODELS: dict[str, str] = {
     "openai": "gpt-4o-mini",
-    "anthropic": "claude-sonnet-5-5",
     "ollama": "llama3.1",
 }
 
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     def model_name(self) -> str | None:
         if self.llm_provider == "offline":
             return None
-        return self.llm_model or DEFAULT_MODELS[self.llm_provider]
+        return self.llm_model or DEFAULT_MODELS.get(self.llm_provider)
 
     @property
     def ehr_db(self) -> Path:

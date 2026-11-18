@@ -43,8 +43,10 @@ class ChatModelLLM:
 
 def make_llm(settings: Settings) -> LLM | None:
     provider, model = settings.llm_provider, settings.model_name
-    if provider == "offline" or model is None:
+    if provider == "offline":
         return None
+    if model is None:
+        raise RuntimeError(f"Set CAREFLOW_LLM_MODEL to the {provider} model id you want to use")
     temperature = settings.llm_temperature
     chat: Any
     method: str | None = None

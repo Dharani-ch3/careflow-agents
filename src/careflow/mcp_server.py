@@ -1,7 +1,7 @@
 """The MCP server that gives agents scoped access to the clinic's systems.
 
 Run it on its own over stdio (``careflow-mcp``) and point any MCP client at it,
-for example Claude Desktop or the MCP Inspector, or let the app host it in-process.
+for example the MCP Inspector or an IDE such as Cursor, or let the app host it in-process.
 
 Every tool sets all four MCP annotation hints (``readOnlyHint``,
 ``destructiveHint``, ``idempotentHint``, ``openWorldHint``). Read-only tools are
