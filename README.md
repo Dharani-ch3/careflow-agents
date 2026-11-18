@@ -3,6 +3,7 @@
 [![CI](https://github.com/Dharani-ch3/careflow-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/Dharani-ch3/careflow-agents/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![M8ven Trust](https://m8ven.ai/badge/mcp/dharani-ch3/careflow-agents?variant=verified)](https://m8ven.ai/mcp/dharani-ch3/careflow-agents?s=readme)
 
 **Live demo:** [careflow-agents.onrender.com](https://careflow-agents.onrender.com) (free hosting, so the first visit can take up to a minute to wake up)
 
