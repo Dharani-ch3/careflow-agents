@@ -147,8 +147,10 @@ opens a ticket for staff and tells the patient so. It doesn't guess.
 
 The clinic's systems (scheduling, pharmacy, billing, demographics, a ticket queue) are
 exposed as a standalone MCP server with 11 tools. Every tool is scoped to a
-`patient_id` and refuses to touch anyone else's records. Read-only tools are marked
-`readOnlyHint`, and write tools are marked `destructiveHint` and accept an
+`patient_id` and refuses to touch anyone else's records. Every tool sets all four
+MCP annotation hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`,
+`openWorldHint`). Read-only tools are marked `readOnlyHint`; write tools that change
+existing records are marked `destructiveHint`; all write tools accept an
 `idempotency_key`.
 
 You can use it on its own with any MCP client:

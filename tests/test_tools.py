@@ -72,6 +72,12 @@ async def test_mcp_server_exposes_tools_with_hints(ehr: EHR) -> None:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert tools["list_appointments"].annotations.read_only_hint is True
         assert tools["request_refill"].annotations.destructive_hint is True
+        assert tools["create_ticket"].annotations.destructive_hint is False
+
+        hint_names = ("read_only_hint", "destructive_hint", "idempotent_hint", "open_world_hint")
+        for tool in tools.values():
+            for name in hint_names:
+                assert getattr(tool.annotations, name) is not None, f"{tool.name}: no {name}"
 
         refused = await client.call_tool(
             "get_invoice", {"patient_id": "P001", "invoice_number": "INV-1042"}
