@@ -3,9 +3,13 @@
 Run it on its own over stdio (``careflow-mcp``) and point any MCP client at it,
 for example Claude Desktop or the MCP Inspector, or let the app host it in-process.
 
-Read-only tools are marked ``readOnlyHint``; tools that change records are marked
-``destructiveHint`` and take an ``idempotency_key``, so a retried step can't book
-the same slot twice.
+Every tool sets all four MCP annotation hints (``readOnlyHint``,
+``destructiveHint``, ``idempotentHint``, ``openWorldHint``). Read-only tools are
+marked ``readOnlyHint``; tools that change existing records are marked
+``destructiveHint``; ``create_ticket`` only adds a record, so it is not. Every
+write tool takes an ``idempotency_key``, so a retried step can't book the same
+slot twice. No tool reaches outside the clinic's own database, so
+``openWorldHint`` is false throughout.
 """
 
 from __future__ import annotations
@@ -20,8 +24,15 @@ from careflow.config import get_settings
 from careflow.ehr import EHR
 from careflow.seed import seed
 
-READ = ToolAnnotations(readOnlyHint=True, openWorldHint=False)
-WRITE = ToolAnnotations(readOnlyHint=False, destructiveHint=True, idempotentHint=True)
+READ = ToolAnnotations(
+    readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False
+)
+WRITE = ToolAnnotations(
+    readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False
+)
+CREATE = ToolAnnotations(
+    readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False
+)
 
 INSTRUCTIONS = """\
 Tools for a primary-care clinic: scheduling, pharmacy refills, billing and patient
@@ -99,7 +110,7 @@ def build_server(ehr: EHR) -> MCPServer:
         """Change the phone number and/or email on file."""
         return ehr.update_contact_info(patient_id, phone, email, idempotency_key)
 
-    @server.tool(annotations=WRITE)
+    @server.tool(annotations=CREATE)
     def create_ticket(
         patient_id: str,
         category: str,
